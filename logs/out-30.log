@@ -1,0 +1,10 @@
+2026-04-29 10:02:40: [Stubs API] Server running on port 5000
+2026-04-29 10:02:40: [Stubs API] Database: mongodb://localhost:27017/sms-gateway?replicaSet=rs0
+2026-04-29 10:17:36: [Stubs API] Server running on port 5000
+2026-04-29 10:17:36: [Stubs API] Database: mongodb://localhost:27017/sms-gateway?replicaSet=rs0
+2026-04-30 05:02:03: [Stubs API] Server running on port 5000
+2026-04-30 05:02:03: [Stubs API] Database: mongodb://localhost:27017/sms-gateway?replicaSet=rs0
+2026-04-30 05:07:30: [Stubs API] Server running on port 5000
+2026-04-30 05:07:30: [Stubs API] Database: mongodb://localhost:27017/sms-gateway?replicaSet=rs0
+2026-04-30 05:10:26: [Stubs API] Server running on port 5000
+2026-04-30 05:10:26: [Stubs API] Database: mongodb://localhost:27017/sms-gateway?replicaSet=rs0

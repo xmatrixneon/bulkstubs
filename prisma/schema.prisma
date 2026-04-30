@@ -1,0 +1,232 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String    @unique
+  password      String
+  name          String?
+  apiKey        String?   @unique
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Device {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  deviceId              String   @unique
+  name                  String
+  status                String   @default("offline")
+  lastSeen              DateTime @default(now())
+  lastHeartbeat         DateTime @default(now())
+  batteryLevel          Int?
+  isCharging            Boolean  @default(false)
+  signalStrength        Int      @default(0)
+  networkType           String   @default("none")
+  sims                  Json
+  location              Json?
+  appVersion            String?
+  osVersion             String?
+  deviceModel           String?
+  manufacturer          String?
+  totalMessagesSent     Int      @default(0)
+  totalMessagesReceived Int      @default(0)
+  lastMessageReceived   DateTime?
+  apiKey                String?
+  isActive              Boolean  @default(true)
+  notes                 String?
+  isFavorite            Boolean  @default(false)
+  favoritedAt           DateTime?
+  registeredAt          DateTime?
+  fcmToken              String?
+  fcmTokenUpdatedAt     DateTime?
+  lastWakeupAttempt     DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Daily SMS Limit Tracking
+  dailySmsSent          Int      @default(0)
+  dailySmsLimit         Int      @default(100)
+  dailySmsResetAt       DateTime @default(now())
+  isRetired             Boolean  @default(false)
+  retiredAt             DateTime?
+}
+
+model Numbers {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  number               Int      @unique
+  countryid            String   @db.ObjectId
+  port                 String?
+  operator             String?
+  signal               Int      @default(0)
+  qualityScore         Int      @default(100)
+  suspended            Boolean  @default(false)
+  suspensionReason     String   @default("none")
+  suspendedAt          DateTime?
+  failureCount         Int      @default(0)
+  successCount         Int      @default(0)
+  consecutiveFailures  Int      @default(0)
+  lastFailureAt        DateTime?
+  lastSuccessAt        DateTime?
+  active               Boolean  @default(true)
+  locked               Boolean  @default(false)
+  multiuse             Boolean  @default(false)
+  lastRotation         DateTime?
+  smsReceivedInWindow   Int      @default(0)
+  lowSmsSuspensionCount Int     @default(0)
+  lastLowSmsCheck      DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Orders {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  number         Int
+  countryid      String   @db.ObjectId
+  serviceid      String   @db.ObjectId
+  dialcode       Int
+  isused         Boolean  @default(false)
+  ismultiuse     Boolean  @default(true)
+  nextsms        Boolean  @default(false)
+  message        Json
+  format         Json
+  maxmessage     Int      @default(0)
+  active         Boolean  @default(true)
+  failureReason  String   @default("none")
+  qualityImpact  Int      @default(0)
+  numberSnapshot Json?
+  cooldownUntil  DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  sender    String
+  receiver  String
+  port      String
+  time      DateTime
+  message   String
+  metadata  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  image      String
+  code       String   @unique
+  format    Json
+  multisms   Boolean  @default(true)
+  maxmessage Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Country {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  flag      String
+  code      String   @unique
+  dialcode  Int
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lock {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  number    Int
+  countryid String   @db.ObjectId
+  serviceid String   @db.ObjectId
+  locked    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cron {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @unique
+  lastRun   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// Bulk SMS Campaign Model
+model BulkCampaign {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  status          String   @default("pending") // pending, processing, completed, failed, cancelled
+  totalRecipients Int      @default(0)
+  sentCount       Int      @default(0)
+  deliveredCount  Int      @default(0)
+  failedCount     Int      @default(0)
+  message         String
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  devicePool      Json     // Array of device IDs to use
+  strategy        String   @default("round-robin") // round-robin, load-balanced, priority
+  userId          String?  @db.ObjectId
+  createdBy       String?
+  webhookUrl      String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  messages        BulkMessage[]
+}
+
+// Individual Bulk Message Model
+model BulkMessage {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  campaignId      String   @db.ObjectId
+  recipientNumber String
+  message         String
+  status          String   @default("pending") // pending, queued, sent, delivered, failed
+  deviceId        String?
+  simSlot         Int      @default(1)
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  failedAt        DateTime?
+  failureReason   String?
+  messageId       String?  // Android messageId
+  deliveryStatus  String?  // sent, delivered, failed
+  retryCount      Int      @default(0)
+  maxRetries      Int      @default(3)
+  metadata        Json?
+
+  // SMS Encoding Metadata
+  encoding        String?  // 'GSM-7' or 'UCS-2'
+  segmentCount    Int?     @default(1) // Number of SMS segments
+  segmentIndex    Int?     @default(0) // Current segment index (for multipart tracking)
+
+  // Latency Tracking (for analytics dashboard)
+  queuedAt        DateTime? // When message was queued
+  sendDuration    Int?      // Time from queued → sent (milliseconds)
+  deliveryDuration Int?     // Time from sent → delivered (milliseconds)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  campaign        BulkCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}

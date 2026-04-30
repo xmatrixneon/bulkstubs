@@ -1,0 +1,21 @@
+2026-04-28 13:03:36: [Stubs API] Error: PrismaClientKnownRequestError: 
+2026-04-28 13:03:36: Invalid `prisma.user.findUnique()` invocation:
+2026-04-28 13:03:36: 
+2026-04-28 13:03:36: 
+2026-04-28 13:03:36: Error converting field "password" of expected non-nullable type "String", found incompatible value of "null".
+2026-04-28 13:03:36:     at ei.handleRequestError (/var/www/stubs/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+2026-04-28 13:03:36:     at ei.handleAndLogRequestError (/var/www/stubs/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+2026-04-28 13:03:36:     at ei.request (/var/www/stubs/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+2026-04-28 13:03:36:     at async a (/var/www/stubs/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+2026-04-28 13:03:36:     at async validateApiKey (/var/www/stubs/src/routes/orders.ts:10:16)
+2026-04-28 13:03:36:     at async buynumber (/var/www/stubs/src/routes/orders.ts:101:22)
+2026-04-28 13:03:36:     at async <anonymous> (/var/www/stubs/src/index.ts:27:20) {
+2026-04-28 13:03:36:   code: 'P2032',
+2026-04-28 13:03:36:   meta: {
+2026-04-28 13:03:36:     modelName: 'User',
+2026-04-28 13:03:36:     field: 'password',
+2026-04-28 13:03:36:     expected_type: 'String',
+2026-04-28 13:03:36:     found: 'null'
+2026-04-28 13:03:36:   },
+2026-04-28 13:03:36:   clientVersion: '6.19.3'
+2026-04-28 13:03:36: }
