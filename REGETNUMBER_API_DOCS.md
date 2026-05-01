@@ -87,7 +87,7 @@ The order has been successfully reset:
 | Response            | Description                                                    |
 |---------------------|----------------------------------------------------------------|
 | `BAD_KEY`           | Invalid API key                                                |
-| `NO_ACTIVATION`     | Order not found, not active, OR not yet used (`isused: false`) |
+| `NO_ACTIVATION`     | Order not found OR not yet used (`isused: false`) |
 | `NO_ACTIVE_NUMBER`  | The number is inactive or suspended                           |
 | `WRONG_ACTION`      | Invalid action parameter                                      |
 
@@ -142,7 +142,7 @@ curl "https://syncmesh-datacore.shop/stubs/handler_api.php?action=getStatus&api_
 ## Important Notes
 
 ### Timeout Window
-The order's 20-minute timeout from creation is **NOT** extended by `regetNumber`. If the order is near expiration, call `getNumber` to get a new number instead.
+**`regetNumber` works on expired orders.** Even if the order timed out (past 20 minutes), you can still reset it to get a new OTP on the same number/service, as long as `isused: true`.
 
 ### Order State
 - **Does NOT** change the phone number
@@ -153,9 +153,10 @@ The order's 20-minute timeout from creation is **NOT** extended by `regetNumber`
 
 ### Requirements
 The order **must** meet these conditions:
-- Order is active (`active: true`)
 - Order has already been used (`isused: true`) - meaning OTP was already received
 - The phone number is active and not suspended
+
+**Note:** Works even on expired/inactive orders (timeout), as long as `isused: true`
 
 ### When to Use
 - OTP expired before verification
@@ -165,7 +166,6 @@ The order **must** meet these conditions:
 
 ### When NOT to Use
 - Fresh order that hasn't received OTP yet (will return `NO_ACTIVATION`)
-- Order is older than 20 minutes (use `getNumber` instead)
 - Number is no longer active
 - You need a different phone number
 
@@ -177,7 +177,7 @@ The order **must** meet these conditions:
 |---------------------|-----------------------------------------------------------------------------|-------------|
 | `REGET_NUMBER_OK`   | Order successfully reset (only works when `isused: true`)                    | 200         |
 | `BAD_KEY`           | Invalid API key                                                             | 200         |
-| `NO_ACTIVATION`     | Order not found, inactive, OR not yet used (`isused: false`)                | 200         |
+| `NO_ACTIVATION`     | Order not found OR not yet used (`isused: false`)                | 200         |
 | `NO_ACTIVE_NUMBER`  | Number inactive or suspended                                                | 200         |
 | `WRONG_ACTION`      | Invalid action parameter                                                    | 200         |
 

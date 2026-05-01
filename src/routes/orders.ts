@@ -309,11 +309,12 @@ export async function regetnumber(params: { api_key?: string; id?: string }): Pr
     where: { id }
   });
 
-  if (!order || !order.active) {
+  if (!order) {
     return RESPONSES.NO_ACTIVATION;
   }
 
   // Only allow regetNumber if order has already been used (has received OTP)
+  // Note: Works even if order is inactive/expired (timeout), as long as isused=true
   if (!order.isused) {
     return RESPONSES.NO_ACTIVATION;
   }
