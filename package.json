@@ -1,24 +1,24 @@
 {
   "name": "stubs-api",
   "version": "1.0.0",
-  "description": "SMS Gateway Stubs API - Node.js + TypeScript + Prisma",
-  "type": "module",
+  "description": "PHP-compatible legacy API for SMS activation",
+  "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx src/index.ts",
+    "start": "tsx src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "express": "^4.21.2",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.4",
     "prisma": "^6.19.3",
-    "typescript": "^5.8.3",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.3"
   }
 }

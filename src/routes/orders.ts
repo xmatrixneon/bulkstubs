@@ -287,6 +287,55 @@ export async function getsms(params: { api_key?: string; id?: string }): Promise
 }
 
 /**
+ * Reget Number - Reset order to receive OTP again on same number/service
+ * PHP equivalent: action=regetNumber
+ */
+export async function regetnumber(params: { api_key?: string; id?: string }): Promise<string> {
+  const { api_key, id } = params;
+
+  // Validate API key
+  const validation = await validateApiKey(api_key);
+  if (!validation.valid) {
+    return RESPONSES.BAD_KEY;
+  }
+
+  // Validate inputs
+  if (!id) {
+    return RESPONSES.NO_ACTIVATION;
+  }
+
+  // Get order
+  const order = await prisma.orders.findUnique({
+    where: { id }
+  });
+
+  if (!order || !order.active) {
+    return RESPONSES.NO_ACTIVATION;
+  }
+
+  // Check if the number is still active and not suspended
+  const numberData = await prisma.numbers.findFirst({
+    where: { number: order.number }
+  });
+
+  if (!numberData || !numberData.active || numberData.suspended) {
+    return RESPONSES.NO_ACTIVE_NUMBER;
+  }
+
+  // Reset the order - clear messages and set isused to false
+  await prisma.orders.update({
+    where: { id },
+    data: {
+      message: [],
+      isused: false,
+      updatedAt: new Date()
+    }
+  });
+
+  return RESPONSES.REGET_NUMBER_OK;
+}
+
+/**
  * Set Cancel/Status - Cancel or retry order
  * PHP equivalent: action=setStatus
  */

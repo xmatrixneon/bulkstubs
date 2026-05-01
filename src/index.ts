@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { buynumber, getsms, setcancel } from './routes/orders';
+import { buynumber, getsms, setcancel, regetnumber } from './routes/orders';
 
 // Load environment variables
 dotenv.config();
@@ -33,6 +33,10 @@ app.get('/', async (req, res) => {
 
       case 'setStatus':
         response = await setcancel({ api_key: apiKeyStr, id: idStr, status: statusStr });
+        break;
+
+      case 'regetNumber':
+        response = await regetnumber({ api_key: apiKeyStr, id: idStr });
         break;
 
       default:
