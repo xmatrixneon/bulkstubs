@@ -84,12 +84,12 @@ The order has been successfully reset:
 
 ### Error Responses
 
-| Response            | Description                                 |
-|---------------------|---------------------------------------------|
-| `BAD_KEY`           | Invalid API key                             |
-| `NO_ACTIVATION`     | Order not found or not active               |
-| `NO_ACTIVE_NUMBER`  | The number is inactive or suspended         |
-| `WRONG_ACTION`      | Invalid action parameter                    |
+| Response            | Description                                                    |
+|---------------------|----------------------------------------------------------------|
+| `BAD_KEY`           | Invalid API key                                                |
+| `NO_ACTIVATION`     | Order not found, not active, OR not yet used (`isused: false`) |
+| `NO_ACTIVE_NUMBER`  | The number is inactive or suspended                           |
+| `WRONG_ACTION`      | Invalid action parameter                                      |
 
 ---
 
@@ -151,12 +151,20 @@ The order's 20-minute timeout from creation is **NOT** extended by `regetNumber`
 - **DOES** clear the message array
 - **DOES** reset `isused` to `false`
 
+### Requirements
+The order **must** meet these conditions:
+- Order is active (`active: true`)
+- Order has already been used (`isused: true`) - meaning OTP was already received
+- The phone number is active and not suspended
+
 ### When to Use
 - OTP expired before verification
 - Need to retry verification with same number/service
 - User requested new OTP for same service
+- Previous OTP was incorrect or not received in time
 
 ### When NOT to Use
+- Fresh order that hasn't received OTP yet (will return `NO_ACTIVATION`)
 - Order is older than 20 minutes (use `getNumber` instead)
 - Number is no longer active
 - You need a different phone number
@@ -165,13 +173,13 @@ The order's 20-minute timeout from creation is **NOT** extended by `regetNumber`
 
 ## Response Codes Reference
 
-| Code                | Meaning                          | HTTP Status |
-|---------------------|----------------------------------|-------------|
-| `REGET_NUMBER_OK`   | Order successfully reset         | 200         |
-| `BAD_KEY`           | Invalid API key                  | 200         |
-| `NO_ACTIVATION`     | Order not found or inactive      | 200         |
-| `NO_ACTIVE_NUMBER`  | Number inactive or suspended     | 200         |
-| `WRONG_ACTION`      | Invalid action parameter         | 200         |
+| Code                | Meaning                                                                     | HTTP Status |
+|---------------------|-----------------------------------------------------------------------------|-------------|
+| `REGET_NUMBER_OK`   | Order successfully reset (only works when `isused: true`)                    | 200         |
+| `BAD_KEY`           | Invalid API key                                                             | 200         |
+| `NO_ACTIVATION`     | Order not found, inactive, OR not yet used (`isused: false`)                | 200         |
+| `NO_ACTIVE_NUMBER`  | Number inactive or suspended                                                | 200         |
+| `WRONG_ACTION`      | Invalid action parameter                                                    | 200         |
 
 **Note:** All responses return HTTP 200. Check the response body for the actual result.
 
