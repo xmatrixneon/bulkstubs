@@ -313,12 +313,6 @@ export async function regetnumber(params: { api_key?: string; id?: string }): Pr
     return RESPONSES.NO_ACTIVATION;
   }
 
-  // Only allow regetNumber if order has already been used (has received OTP)
-  // Note: Works even if order is inactive/expired (timeout), as long as isused=true
-  if (!order.isused) {
-    return RESPONSES.NO_ACTIVATION;
-  }
-
   // Check if the number is still active and not suspended
   const numberData = await prisma.numbers.findFirst({
     where: { number: order.number }
